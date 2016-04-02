@@ -1,4 +1,4 @@
-package dice
+package tip
 
 import (
 	"github.com/itsabot/abot/shared/datatypes"
@@ -29,7 +29,7 @@ func init() {
 
 	p.Vocab = dt.NewVocab(
 		dt.VocabHandler{
-			Fn: findNumDieSides,
+			Fn: parseTip,
 			Trigger: &nlp.StructuredInput{
 				Commands: []string{"whats", "what's"},
 				Objects:  []string{"tip"},
@@ -46,22 +46,23 @@ func FollowUp(in *dt.Msg) (string, error) {
 	return p.Vocab.HandleKeywords(in), nil
 }
 
-func parseTip(in *dt.Msg) (resp string) {
+func parseTip(in *dt.Msg) string {
 	var amount float64 = 0
 	var tip float64 = 15
 
 	for _, obj := range in.Tokens {
 		if strings.Contains(obj, "$") {
-			amount = strconv.ParseFloat(strings.TrimPrefix(obj, "$"), 64)
+			amount, _ = strconv.ParseFloat(strings.TrimPrefix(obj, "$"), 64)
 		}
 
 		if strings.Contains(obj, "%") {
-			tip = strconv.ParseFloat(strings.TrimSuffix(obj, "$"), 64)
+			tip, _ = strconv.ParseFloat(strings.TrimSuffix(obj, "%"), 64)
 		}
 	}
 	return calcTip(amount, tip)
 }
 
-func calcTip(spent float64, tip float64) (result int) {
-	result = spent * tip / 100
+func calcTip(spent float64, tip float64) string {
+	result := spent * tip / 100
+	return strconv.FormatFloat(result, 'f', 2, 64)
 }
