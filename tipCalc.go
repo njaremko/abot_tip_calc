@@ -59,7 +59,7 @@ func parseTip(in *dt.Msg) string {
 			tip, _ = strconv.ParseFloat(strings.TrimSuffix(obj, "%"), 64)
 		}
 	}
-	return calcTip(amount, tip)
+	return "I recommend you pay a $" + calcTip(amount, tip) + " tip."
 }
 
 func calcTip(spent float64, tip float64) string {
