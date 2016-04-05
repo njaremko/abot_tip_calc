@@ -14,7 +14,7 @@ var p *dt.Plugin
 func init() {
 
 	trigger := &nlp.StructuredInput{
-		Commands: []string{"whats", "what's"},
+		Commands: []string{"what"},
 		Objects:  []string{"tip"},
 	}
 
@@ -31,7 +31,7 @@ func init() {
 		dt.VocabHandler{
 			Fn: parseTip,
 			Trigger: &nlp.StructuredInput{
-				Commands: []string{"whats", "what's"},
+				Commands: []string{"what"},
 				Objects:  []string{"tip"},
 			},
 		},
@@ -59,7 +59,11 @@ func parseTip(in *dt.Msg) string {
 			tip, _ = strconv.ParseFloat(strings.TrimSuffix(obj, "%"), 64)
 		}
 	}
-	return "I recommend you pay a $" + calcTip(amount, tip) + " tip."
+	if amount != 0 {
+		return "I recommend you tip $" + calcTip(amount, tip)
+	} else {
+		return "Please make sure you include the '$' symbol prefix."
+	}
 }
 
 func calcTip(spent float64, tip float64) string {
