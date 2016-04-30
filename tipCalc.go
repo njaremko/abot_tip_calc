@@ -16,7 +16,7 @@ var p *dt.Plugin
 func init() {
 
 	trigger := &nlp.StructuredInput{
-		Commands: []string{"what", "how"},
+		Commands: []string{"what", "how", "calculate"},
 		Objects:  []string{"tip"},
 	}
 
@@ -31,11 +31,8 @@ func init() {
 
 	p.Vocab = dt.NewVocab(
 		dt.VocabHandler{
-			Fn: parseTip,
-			Trigger: &nlp.StructuredInput{
-				Commands: []string{"what", "how"},
-				Objects:  []string{"tip"},
-			},
+			Fn:      parseTip,
+			Trigger: trigger,
 		},
 	)
 }
@@ -76,9 +73,9 @@ func parseTip(in *dt.Msg) string {
 	}
 	// Return the final string
 	if amount != 0 {
-		return "I recommend you tip $" + calcTip(amount, tip)
+		return "I recommend you tip $" + calcTip(amount, tip) + "."
 	} else {
-		return "I'm sorry, but you didn't specify an amount of money"
+		return "I'm sorry, but you didn't specify an amount of money."
 	}
 }
 
