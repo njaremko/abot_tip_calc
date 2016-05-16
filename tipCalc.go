@@ -1,13 +1,14 @@
 package tip
 
 import (
+	"log"
+	"strconv"
+	"strings"
+
 	"github.com/itsabot/abot/shared/datatypes"
 	"github.com/itsabot/abot/shared/language"
 	"github.com/itsabot/abot/shared/nlp"
 	"github.com/itsabot/abot/shared/plugin"
-	"log"
-	"strconv"
-	"strings"
 )
 
 var p *dt.Plugin
@@ -15,7 +16,7 @@ var p *dt.Plugin
 func init() {
 
 	trigger := &nlp.StructuredInput{
-		Commands: []string{"what"},
+		Commands: []string{"what", "how", "calculate"},
 		Objects:  []string{"tip"},
 	}
 
@@ -30,11 +31,8 @@ func init() {
 
 	p.Vocab = dt.NewVocab(
 		dt.VocabHandler{
-			Fn: parseTip,
-			Trigger: &nlp.StructuredInput{
-				Commands: []string{"what"},
-				Objects:  []string{"tip"},
-			},
+			Fn:      parseTip,
+			Trigger: trigger,
 		},
 	)
 }
@@ -65,16 +63,19 @@ func parseTip(in *dt.Msg) string {
 			if tempTip, err := strconv.ParseFloat(tokenizedSentence[i], 64); err == nil {
 				tip = tempTip
 			}
+		} else {
 			// If the previous two cases aren't true, but this is. Then it should be the amount spent.
-		} else if temp := language.ExtractCurrency(tokenizedSentence[i]); temp.Valid == true {
-			amount = float64(temp.Int64)
+			val, err := language.ExtractCurrency(tokenizedSentence[i])
+			if err == nil {
+				amount = float64(val)
+			}
 		}
 	}
 	// Return the final string
 	if amount != 0 {
-		return "I recommend you tip $" + calcTip(amount, tip)
+		return "I recommend you tip $" + calcTip(amount, tip) + "."
 	} else {
-		return "I'm sorry, but you didn't specify an amount of money"
+		return "I'm sorry, but you didn't specify an amount of money."
 	}
 }
 
